@@ -4,6 +4,9 @@
 #include "Noeud.h"
 
 
+enum infoFils { noFils, filsDroite, filsGauche};
+
+
 template <class Type> class ABR;
 template <class Type> class Noeud;
 
@@ -15,13 +18,17 @@ private:
     Noeud<Type>* adRacine;
     unsigned int nbElem;
 
-    bool recherche(Noeud<Type>* node, const Type& e) const;
-    void inserer(Noeud<Type>* node, const Type& e);
     void affichePrefixeRecursive(const Noeud<Type>* node) const;
+    void afficheInfixeRecursive(const Noeud<Type>* node) const;
+    void affichePostfixeRecursive(const Noeud<Type>* node) const;
 
     void supprimer(Noeud<Type>* node, const Type& e, Noeud<Type>* ancienNoeud);
     void supprimerElement(Noeud<Type>* node, Noeud<Type>* ancienNoeud);
     Type chercheMaxGauche(Noeud<Type>* node, Noeud<Type>* ancienNoeud);
+    
+    void inserer(Noeud<Type>*& node, const Type& e);
+    bool recherche(Noeud<Type>* node, const Type& e) const;
+
 public:
 
     ABR();

@@ -19,9 +19,9 @@ Noeud<Type>::Noeud(const Type& elem, Noeud<Type>* fg, Noeud<Type>* fd) {
 
 template <class Type>
 Noeud<Type>::~Noeud() {
-	if (_elem != 0) delete _elem;
-	if (_fg != 0) delete _fg;
-	if (_fd != 0) delete _fd;
+	delete _elem;
+	delete _fg;
+	delete _fd;
 }
 
 template <class Type>
@@ -51,6 +51,8 @@ void Noeud<Type>::copie(const Noeud<Type>& node) {
 		fd->copie(*node._fd);
 	}
 }
+
+
 
 template class Noeud<Element>;
 template class Noeud<int>;

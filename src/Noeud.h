@@ -15,6 +15,7 @@ private:
     Noeud* _fg;
     Noeud* _fd;
     bool vide;
+    bool rouge = true; //Par défaut
 
 public:
 

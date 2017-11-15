@@ -5,7 +5,7 @@
 template <class Type>
 ABR<Type>::ABR() {
 	nbElem = 0;
-	adRacine = new Noeud<Type>;
+	adRacine = 0;
 }
 
 template <class Type>
@@ -17,14 +17,9 @@ ABR<Type>::ABR(const ABR<Type>& abr) {
 
 template <class Type>
 ABR<Type>::~ABR() { delete adRacine; }
-
 template <class Type>
 void ABR<Type>::inserer(const Type& e) {
-	if(adRacine->vide) {
-		adRacine->element(e);
-		nbElem++;
-	}
-	else inserer(adRacine, e);
+	inserer(adRacine, e);
 }
 
 template <class Type>
@@ -34,7 +29,7 @@ void ABR<Type>::supprimer(const Type& e) {
 
 template <class Type>
 bool ABR<Type>::recherche(const Type& e) const {
-	return recherche(adRacine->_fg, e) || recherche(adRacine->_fd, e);
+	return recherche(adRacine, e);
 }
 
 template <class Type>
@@ -43,42 +38,50 @@ void ABR<Type>::afficherParcoursPrefixe() const {
 	affichePrefixeRecursive(adRacine);
 	std::cout<<std::endl;
 }
-/*
+
+template <class Type>
 void ABR<Type>::afficherParcoursInfixe() const {
 	afficheInfixeRecursive(adRacine);
 }
 
+template <class Type>
 void ABR<Type>::afficherParcoursPostfixe() const {
 	affichePostfixeRecursive(adRacine);
-}*/
+}
 
 /**
  * Private
  */
 
+
 template <class Type>
 bool ABR<Type>::recherche(Noeud<Type>* node, const Type& e) const {
-	if (node == 0 || node->vide) return false;
+	if (node == 0) return false;
 	else if (node->element() == e) return true;
 	else if (node->element() > e) return recherche(node->_fg, e);
 	else return recherche(node->_fd, e);
 }
 
 template <class Type>
-void ABR<Type>::inserer(Noeud<Type>* node, const Type& e) {
-	if (node->element() > e) {
-		if (node->_fg == 0) {
-			node->_fg = new Noeud<Type>(e);
-			nbElem++;
+void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, infoFils& info) {
+	if (node == 0) node = new Noeud<Type>(e);
+	else if (node->element() > e) {
+		inserer(node->_fg, e, info);
+		//Traitement remontée gauche
+		if (noFils) 
+
+		else if (filsDroite) {
+
+		} 
+
+		else {
+
 		}
-		else inserer(node->_fg, e);
+
 	}
 	else if (node->element() < e) {
-		if (node->_fd == 0) {
-			node->_fd = new Noeud<Type>(e);
-			nbElem++;
-		}
-		else inserer(node->_fd, e);
+		inserer(node->_fd, e, noFils);
+		//Traitement remontée droite
 	}
 }
 
@@ -130,22 +133,24 @@ void ABR<Type>::affichePrefixeRecursive(const Noeud<Type>* node) const {
 		affichePrefixeRecursive(node->_fd);
 	}
 }
-/*
-void ABR<Type>::afficheInfixeRecursive(adRacine) const {
+
+template <class Type>
+void ABR<Type>::afficheInfixeRecursive(const Noeud<Type>* node) const {
 	if(node != 0) {
+		afficheInfixeRecursive(node->_fg);
 		std::cout<<*(node->_elem)<<", ";
-		affichePrefixeRecursive(node->_fg);
-		affichePrefixeRecursive(node->_fd);
+		afficheInfixeRecursive(node->_fd);
 	}
 }
 
-void ABR<Type>::affichePostfixeRecursive(adRacine) const {
+template <class Type>
+void ABR<Type>::affichePostfixeRecursive(const Noeud<Type>* node) const {
 	if(node != 0) {
+		affichePostfixeRecursive(node->_fg);
+		affichePostfixeRecursive(node->_fd);
 		std::cout<<*(node->_elem)<<", ";
-		affichePrefixeRecursive(node->_fg);
-		affichePrefixeRecursive(node->_fd);
 	}
-}*/
+}
 
 //Declaration des types "prévus", nécessaires si l'on veut utiliser un header file 
 //ET un fichier .cpp

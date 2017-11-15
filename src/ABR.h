@@ -26,7 +26,7 @@ private:
     void supprimerElement(Noeud<Type>* node, Noeud<Type>* ancienNoeud);
     Type chercheMaxGauche(Noeud<Type>* node, Noeud<Type>* ancienNoeud);
     
-    void inserer(Noeud<Type>*& node, const Type& e);
+    void inserer(Noeud<Type>*& node, const Type& e, int& info);
     bool recherche(Noeud<Type>* node, const Type& e) const;
 
 public:

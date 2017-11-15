@@ -17,9 +17,12 @@ ABR<Type>::ABR(const ABR<Type>& abr) {
 
 template <class Type>
 ABR<Type>::~ABR() { delete adRacine; }
+
 template <class Type>
 void ABR<Type>::inserer(const Type& e) {
-	inserer(adRacine, e);
+	//infoFils& test = noFils;*
+	int a = 0;
+	inserer(adRacine, e, a);
 }
 
 template <class Type>
@@ -63,26 +66,19 @@ bool ABR<Type>::recherche(Noeud<Type>* node, const Type& e) const {
 }
 
 template <class Type>
-void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, infoFils& info) {
+void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, int& info) {
 	if (node == 0) node = new Noeud<Type>(e);
 	else if (node->element() > e) {
 		inserer(node->_fg, e, info);
 		//Traitement remontée gauche
-		if (noFils) 
-
-		else if (filsDroite) {
-
-		} 
-
-		else {
-
-		}
-
+		info = 1;
 	}
 	else if (node->element() < e) {
-		inserer(node->_fd, e, noFils);
+		inserer(node->_fd, e, info);
 		//Traitement remontée droite
+		info = 2;
 	}
+	std::cout<<"VALEUR DE INFO : "<<info<<std::endl;
 }
 
 template <class Type>

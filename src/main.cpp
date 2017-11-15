@@ -25,13 +25,13 @@ int main(int argc, char** argv) {
 
 	test.afficherParcoursPrefixe();
 
-if(test.recherche(e5)) std::cout<<"On l'a !!"<<std::endl;
+if(test.recherche(e5)) std::cout<<"On l'afezf !!"<<std::endl;
 	
 	test.supprimer(e5);
 	test.supprimer(e8);
 	test.afficherParcoursPrefixe();
 
-	if(test.recherche(e5)) std::cout<<"On l'a !!"<<std::endl;
+	if(test.recherche(e1)) std::cout<<"On l'a !!"<<std::endl;
 
 	ABR<std::string> test2;
 

@@ -5,7 +5,7 @@
 #include "Noeud.h"
 
 
-enum infoFils { noFils, filsDroite, filsGauche};
+enum infoPetitFils { noPetitFils, petitFilsDroite, petitFilsGauche};
 
 
 template <class Type> class ABR;

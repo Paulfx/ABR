@@ -107,12 +107,14 @@ bool ABR<Type>::recherche(Noeud<Type>* node, const Type& e) const {
 }
 
 template <class Type>
-void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, int& info) {
-	if (node == 0) node = new Noeud<Type>(e);
+void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, infoPetitFils& info) {
+	if (node == 0) {
+		node = new Noeud<Type>(e);
+		if (node == adRacine) node->_rouge = false;
+	}
 	else if (node->element() > e) {
-		inserer(node->_fg, e, info);
+		inserer(node->_fg, e, noPetitFils);
 		//Traitement remontée gauche
-
 
 		if (info == 1 && node->_fg->_rouge && node->_fg->_fg->_rouge) { //node->_fg->_fg != 0
 			if (node->_fd != 0 && node->_fd->_rouge) { //Un oncle rouge
@@ -132,10 +134,13 @@ void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, int& info) {
 		}
 
 		info = 1;
+		
 	}
 	else if (node->element() < e) {
-		inserer(node->_fd, e, info);
+		inserer(node->_fd, e, noPetitFils);
 		//Traitement remontée droite
+
+		bool gauche = false;
 
 		if (info == 1 && node->_fd->_rouge && node->_fd->_fg->_rouge) { //node->_fd->_fg != 0
 			if (node->_fg != 0 && node->_fg->_rouge) { //Un oncle rouge
@@ -143,7 +148,7 @@ void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, int& info) {
 				node->_fg->_rouge = false;
 				node->_fd->_rouge = false;
 			}
-			else rotationGauche(node);
+			else rotationDoubleGauche(node);
 		}
 		else if (info == 2 && node->_fd->_rouge && node->_fd->_fd->_rouge) { //node->_fd->_fd != 0
 			if (node->_fg != 0 && node->_fg->_rouge) { //Un oncle rouge
@@ -151,12 +156,16 @@ void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, int& info) {
 				node->_fg->_rouge = false;
 				node->_fd->_rouge = false;
 			}
-			else rotationDoubleGauche(node);
+			else rotationGauche(node);
 		}
 
 		info = 2;
 	}
-	std::cout<<"VALEUR DE INFO : "<<info<<std::endl;
+}
+
+template <class Type>
+void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, bool& modifHauteur) {
+	if (node == 0) 
 }
 
 //node->_fg->_fg != 0
@@ -166,9 +175,14 @@ void ABR<Type>::rotationDroite(Noeud<Type>*& node) {
 	node = node->_fg;
 	pere->_fg = node->_fd;
 	node->_fd = pere;
-	//Couleurs
+	//Couleurs 
 	pere->_rouge = true;
 	node->_rouge = false;
+
+	/*
+	//Diff
+	node->_diff = 0;
+	node->_fd->_diff = 0;*/
 }
 
 //node->_fd->_fd != 0
@@ -203,7 +217,7 @@ void ABR<Type>::rotationDoubleDroite(Noeud<Type>*& node) {
 //node->_fd->_fg != 0
 template <class Type>
 void ABR<Type>::rotationDoubleGauche(Noeud<Type>*& node) {
-	/*Noeud<Type>* pere = node;
+	Noeud<Type>* pere = node;
 	node = node->_fd->_fg;
 
 	pere->_fd->_fg = node->_fd;
@@ -213,9 +227,10 @@ void ABR<Type>::rotationDoubleGauche(Noeud<Type>*& node) {
 	node->_fg = pere;
 	//Couleurs
 	pere->_rouge = true;
-	node->_rouge = false;*/
-	rotationGauche(node);
-	rotationGauche(node);
+	node->_rouge = false;
+
+	//rotationGauche(node);
+	//rotationGauche(node);
 }
 
 template <class Type>

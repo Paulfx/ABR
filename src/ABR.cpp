@@ -2,6 +2,7 @@
 #include "Element.h"
 #include <iostream>
 
+
 template <class Type>
 ABR<Type>::ABR() {
 	nbElem = 0;
@@ -39,17 +40,57 @@ template <class Type>
 void ABR<Type>::afficherParcoursPrefixe() const {
 	std::cout<<"Affichage pré-fixé : ";
 	affichePrefixeRecursive(adRacine);
-	std::cout<<std::endl;
+	std::cout<<'.'<<std::endl;
 }
 
 template <class Type>
 void ABR<Type>::afficherParcoursInfixe() const {
+	std::cout<<"Affichage infixe : ";
 	afficheInfixeRecursive(adRacine);
+	std::cout<<'.'<<std::endl;
 }
 
 template <class Type>
 void ABR<Type>::afficherParcoursPostfixe() const {
+	std::cout<<"Affichage post-fixé : ";
 	affichePostfixeRecursive(adRacine);
+	std::cout<<'.'<<std::endl;
+}
+
+template <class Type>
+bool ABR<Type>::toPng(const char* filename) const {
+	std::ofstream f(filename);
+	if (!f.is_open()) return false;
+	f << "digraph ABR {\n\n\tnode [fontname=\"Arial\", shape=circle, style=filled, color=black, fontcolor=white]\n";
+	if(adRacine == 0) f << "\n";
+	else if (adRacine->_fg == 0 && adRacine->_fd == 0) f << "\t" << adRacine->element() << "\n";
+	else toPng(adRacine, f);
+	f <<"\n}";
+	f.close();
+	return true;
+}
+
+template <class Type>
+void ABR<Type>::toPng(Noeud<Type>* node, std::ofstream& f) const {
+	static unsigned int nbNull = 0;
+	if (node->_fg != 0) {
+		if (node->_fg->_rouge) f<<"\t"<<node->_fg->element()<<" [color=red]\n";
+		f <<"\t"<<node->element()<<" -> "<<node->_fg->element()<<"\n";
+		toPng(node->_fg, f);
+	}
+	else toPngNull(node->element(), f, nbNull++);
+	if (node->_fd != 0) {
+		if (node->_fd->_rouge) f<<"\t"<<node->_fd->element()<<" [color=red]\n";
+		f <<"\t"<<node->element()<<" -> "<<node->_fd->element()<<"\n";
+		toPng(node->_fd, f);
+	}
+	else toPngNull(node->element(), f, nbNull++);
+}
+
+template <class Type>
+void ABR<Type>::toPngNull(const Type& e, std::ofstream& f, unsigned int nbNull) const {
+	f <<"\tnull"<<nbNull<<" [shape=point]\n";
+	f <<"\t"<<e<<" -> null"<<nbNull<<"\n";
 }
 
 /**
@@ -71,14 +112,110 @@ void ABR<Type>::inserer(Noeud<Type>*& node, const Type& e, int& info) {
 	else if (node->element() > e) {
 		inserer(node->_fg, e, info);
 		//Traitement remontée gauche
+
+
+		if (info == 1 && node->_fg->_rouge && node->_fg->_fg->_rouge) { //node->_fg->_fg != 0
+			if (node->_fd != 0 && node->_fd->_rouge) { //Un oncle rouge
+				if (node != adRacine) node->_rouge = true;
+				node->_fg->_rouge = false;
+				node->_fd->_rouge = false;
+			}
+			else rotationDroite(node);
+		}
+		else if (info == 2 && node->_fg->_rouge && node->_fg->_fd->_rouge) { //node->_fg->_fd != 0
+			if (node->_fd != 0 && node->_fd->_rouge) { //Un oncle rouge
+				if (node != adRacine) node->_rouge = true;
+				node->_fg->_rouge = false;
+				node->_fd->_rouge = false;
+			}
+			else rotationDoubleDroite(node);
+		}
+
 		info = 1;
 	}
 	else if (node->element() < e) {
 		inserer(node->_fd, e, info);
 		//Traitement remontée droite
+
+		if (info == 1 && node->_fd->_rouge && node->_fd->_fg->_rouge) { //node->_fd->_fg != 0
+			if (node->_fg != 0 && node->_fg->_rouge) { //Un oncle rouge
+				if (node != adRacine) node->_rouge = true;
+				node->_fg->_rouge = false;
+				node->_fd->_rouge = false;
+			}
+			else rotationGauche(node);
+		}
+		else if (info == 2 && node->_fd->_rouge && node->_fd->_fd->_rouge) { //node->_fd->_fd != 0
+			if (node->_fg != 0 && node->_fg->_rouge) { //Un oncle rouge
+				if (node != adRacine) node->_rouge = true;
+				node->_fg->_rouge = false;
+				node->_fd->_rouge = false;
+			}
+			else rotationDoubleGauche(node);
+		}
+
 		info = 2;
 	}
 	std::cout<<"VALEUR DE INFO : "<<info<<std::endl;
+}
+
+//node->_fg->_fg != 0
+template <class Type>
+void ABR<Type>::rotationDroite(Noeud<Type>*& node) {
+	Noeud<Type>* pere = node;
+	node = node->_fg;
+	pere->_fg = node->_fd;
+	node->_fd = pere;
+	//Couleurs
+	pere->_rouge = true;
+	node->_rouge = false;
+}
+
+//node->_fd->_fd != 0
+template <class Type>
+void ABR<Type>::rotationGauche(Noeud<Type>*& node) {
+	Noeud<Type>* pere = node;
+	node = node->_fd;
+	pere->_fd = node->_fg;
+	node->_fg = pere;
+	//Couleurs
+	pere->_rouge = true;
+	node->_rouge = false;
+}
+
+//node->_fg->_fd != 0
+template <class Type>
+void ABR<Type>::rotationDoubleDroite(Noeud<Type>*& node) {
+	Noeud<Type>* pere = node;
+	node = node->_fg->_fd;
+
+	pere->_fg->_fd = node->_fg;
+	node->_fg = pere->_fg;
+
+	pere->_fg = node->_fd;
+	node->_fd = pere;
+	//Couleurs
+	pere->_rouge = true;
+	node->_rouge = false;
+
+}
+
+//node->_fd->_fg != 0
+template <class Type>
+void ABR<Type>::rotationDoubleGauche(Noeud<Type>*& node) {
+	/*Noeud<Type>* pere = node;
+	node = node->_fd->_fg;
+
+	pere->_fd->_fg = node->_fd;
+	node->_fd = pere->_fd;
+
+	pere->_fd = node->_fg;
+	node->_fg = pere;
+	//Couleurs
+	pere->_rouge = true;
+	node->_rouge = false;*/
+	rotationGauche(node);
+	rotationGauche(node);
 }
 
 template <class Type>
@@ -122,9 +259,9 @@ Type ABR<Type>::chercheMaxGauche(Noeud<Type>* node,  Noeud<Type>* ancienNoeud) {
 
 template <class Type>
 void ABR<Type>::affichePrefixeRecursive(const Noeud<Type>* node) const {
-	
 	if (node != 0) {
-		std::cout<<*(node->_elem)<<", ";
+		if (node != adRacine) std::cout<<", ";
+		std::cout<<*(node->_elem);
 		affichePrefixeRecursive(node->_fg);
 		affichePrefixeRecursive(node->_fd);
 	}
@@ -133,8 +270,9 @@ void ABR<Type>::affichePrefixeRecursive(const Noeud<Type>* node) const {
 template <class Type>
 void ABR<Type>::afficheInfixeRecursive(const Noeud<Type>* node) const {
 	if(node != 0) {
+		if (node != adRacine) std::cout<<", ";
 		afficheInfixeRecursive(node->_fg);
-		std::cout<<*(node->_elem)<<", ";
+		std::cout<<*(node->_elem);
 		afficheInfixeRecursive(node->_fd);
 	}
 }
@@ -142,9 +280,10 @@ void ABR<Type>::afficheInfixeRecursive(const Noeud<Type>* node) const {
 template <class Type>
 void ABR<Type>::affichePostfixeRecursive(const Noeud<Type>* node) const {
 	if(node != 0) {
+		if (node != adRacine) std::cout<<", ";
 		affichePostfixeRecursive(node->_fg);
 		affichePostfixeRecursive(node->_fd);
-		std::cout<<*(node->_elem)<<", ";
+		std::cout<<*(node->_elem);
 	}
 }
 

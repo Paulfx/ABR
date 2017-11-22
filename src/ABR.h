@@ -1,6 +1,7 @@
 #ifndef _ABR_H
 #define _ABR_H
 
+#include <fstream>
 #include "Noeud.h"
 
 
@@ -29,6 +30,14 @@ private:
     void inserer(Noeud<Type>*& node, const Type& e, int& info);
     bool recherche(Noeud<Type>* node, const Type& e) const;
 
+    void toPng(Noeud<Type>* node, std::ofstream& f) const;
+    void toPngNull(const Type& e, std::ofstream& f, unsigned int nbNull) const;
+
+    void rotationDroite(Noeud<Type>*& node);
+    void rotationGauche(Noeud<Type>*& node);
+    void rotationDoubleDroite(Noeud<Type>*& node);
+    void rotationDoubleGauche(Noeud<Type>*& node);
+
 public:
 
     ABR();
@@ -48,14 +57,14 @@ public:
     /* Postcondition : Si aucun noeud de l'ABR ne contient la valeur e, trouve vaut faux.
                        Si on a trouvé un noeud avec le e demandé, alors trouve vaut vrai.
                        Dans les deux cas, nb_visites contient le nombre de noeuds testés lors de cette recherche. */
-
+                   
     //Affichage
 
     void afficherParcoursInfixe() const;
     void afficherParcoursPrefixe() const;
     void afficherParcoursPostfixe() const;
 
-
+    bool toPng(const char* filename) const;
 };
 
 #endif //_ABR_H
